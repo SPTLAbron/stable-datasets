@@ -31,10 +31,12 @@ from .hasy_v2 import HASYv2
 from .imagenet_1k import ImageNet1K
 from .imagenet_10 import Imagenette
 from .imagenet_100 import ImageNet100
+from .intel_image_classification import IntelImageClassification
 from .k_mnist import KMNIST
 from .linnaeus5 import Linnaeus5
 from .med_mnist import MedMNIST
 from .not_mnist import NotMNIST
+from .plant_village import PlantVillage
 
 # from .mnist import MNIST
 # from .places365_small import Places365Small
@@ -77,10 +79,12 @@ __all__ = [
     "ImageNet1K",
     "ImageNet100",
     "Imagenette",
+    "IntelImageClassification",
     "KMNIST",
     "Linnaeus5",
     "MedMNIST",
     "NotMNIST",
+    "PlantVillage",
     "RockPaperScissor",
     "Shapes3D",
     "SmallNORB",

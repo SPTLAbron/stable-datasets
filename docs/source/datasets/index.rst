@@ -71,6 +71,8 @@ Available Datasets
    face_pointing
    rock_paper_scissor
    linnaeus5
+   plant_village
+   intel_image_classification
 
 .. toctree::
    :maxdepth: 1
