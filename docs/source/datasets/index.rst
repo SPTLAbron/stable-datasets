@@ -73,6 +73,7 @@ Available Datasets
    linnaeus5
    plant_village
    intel_image_classification
+   experiments/plantvillage_intel/REPORT
 
 .. toctree::
    :maxdepth: 1

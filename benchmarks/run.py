@@ -83,6 +83,17 @@ def _resolve_params(cfg: DictConfig) -> None:
                 cfg.model[key] = caster(override)
 
 
+def _scheduler_steps(training_cfg: DictConfig, batches_per_epoch: int) -> int:
+    """Keep a truncated run's scheduler horizon independent of its epoch budget."""
+    scheduler_epochs = training_cfg.get("scheduler_epochs")
+    if scheduler_epochs is None:
+        scheduler_epochs = training_cfg.max_epochs
+    if scheduler_epochs < training_cfg.max_epochs:
+        raise ValueError("training.scheduler_epochs must be at least training.max_epochs")
+    accum = training_cfg.accumulate_grad_batches
+    return math.ceil(batches_per_epoch / accum) * scheduler_epochs
+
+
 # W&B logger
 
 
@@ -185,7 +196,7 @@ def main(cfg: DictConfig) -> None:
 
     # Scheduler needs total steps
     accum = cfg.training.accumulate_grad_batches
-    total_steps = math.ceil(len(data.train) / accum) * cfg.training.max_epochs
+    total_steps = _scheduler_steps(cfg.training, len(data.train))
     with open_dict(cfg):
         cfg.model._total_steps = total_steps
 
@@ -263,6 +274,9 @@ def main(cfg: DictConfig) -> None:
             log.info(f"Resuming from checkpoint: {resume_ckpt}")
         manager = spt.Manager(trainer=trainer, module=module, data=data, ckpt_path=resume_ckpt)
         manager()
+        if not trainer.interrupted:
+            # Preserve the actual final epoch even when the monitored score did not improve.
+            trainer.save_checkpoint(os.path.join(run_ckpt_dir, "final.ckpt"))
     finally:
         if cfg.wandb.enabled and not smoke_test:
             wandb.finish()

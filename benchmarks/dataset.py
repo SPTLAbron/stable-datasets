@@ -116,6 +116,18 @@ def _timeseries(
 
 DATASET_CONFIGS: dict[str, DatasetConfig] = {
     # RGB datasets (3-channel, ImageNet stats unless overridden)
+    "intelimageclassification": _rgb(
+        "intelimageclassification",
+        "Intel Image Classification",
+        6,
+        builder_name="IntelImageClassification",
+    ),
+    "plantvillage": _rgb(
+        "plantvillage",
+        "PlantVillage",
+        38,
+        builder_name="PlantVillage",
+    ),
     "beans": _rgb("beans", "Beans", 3, include_in_results=False),
     "awa2": _rgb("awa2", "AWA2", 50),
     "cifar10": _rgb("cifar10", "CIFAR-10", 10, mean=[0.4914, 0.4822, 0.4465], std=[0.247, 0.2435, 0.2616]),

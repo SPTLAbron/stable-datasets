@@ -1,5 +1,5 @@
 name: simclr
-forward: simclr_forward
+forward: simclr
 
 transforms:
   type: multiview
@@ -79,6 +79,14 @@ params:
     batch_size: 256
     max_epochs: 100
   imagenette:
+    batch_size: 256
+    max_epochs: 150
+
+  # Full-resolution RGB datasets; initial budgets follow imagenette.
+  plantvillage:
+    batch_size: 256
+    max_epochs: 150
+  intelimageclassification:
     batch_size: 256
     max_epochs: 150
 

@@ -1,7 +1,10 @@
 import hashlib
+import io
 import zipfile
 from collections import defaultdict
 from pathlib import PurePosixPath
+
+from PIL import Image as PILImage
 
 from stable_datasets.schema import (
     ClassLabel,
@@ -17,7 +20,7 @@ from stable_datasets.utils import BaseDatasetBuilder, bulk_download
 
 
 class PlantVillage(BaseDatasetBuilder):
-    VERSION = Version("1.0.0")
+    VERSION = Version("1.0.1")
 
     SOURCE = DatasetSource(
         homepage="https://github.com/spMohanty/PlantVillage-Dataset",
@@ -198,10 +201,16 @@ class PlantVillage(BaseDatasetBuilder):
 
             for name in selected:
                 class_name = PurePosixPath(name).parent.name
+                image_bytes = archive.read(name)
+                with PILImage.open(io.BytesIO(image_bytes)) as image:
+                    if image.mode != "RGB":
+                        buffer = io.BytesIO()
+                        image.convert("RGB").save(buffer, format="PNG")
+                        image_bytes = buffer.getvalue()
                 yield (
                     name,
                     {
-                        "image": archive.read(name),
+                        "image": image_bytes,
                         "label": label_to_id[class_name],
                     },
                 )

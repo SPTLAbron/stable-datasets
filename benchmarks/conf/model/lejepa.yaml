@@ -87,6 +87,14 @@ params:
     accumulate_grad_batches: 8
     max_epochs: 188
 
+  # Full-resolution RGB datasets; initial budgets follow imagenette.
+  plantvillage:
+    batch_size: 256
+    max_epochs: 188
+  intelimageclassification:
+    batch_size: 256
+    max_epochs: 188
+
   # ----- new datasets (auto-inserted, paper tier rule) -----
   # 1× ImageNet base
   imagenet100:

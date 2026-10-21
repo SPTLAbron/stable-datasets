@@ -1,0 +1,46 @@
+[
+  {
+    "builder": "PlantVillage",
+    "archive_name": "master.b4fe490113.zip",
+    "archive_sha256": "858df90a05ab147fa2b0a32c47053128c4ca772326c43e962856e69290012374",
+    "archive_bytes": 2504302720,
+    "url": "https://github.com/spMohanty/PlantVillage-Dataset/archive/refs/heads/master.zip",
+    "split_seed": 42,
+    "splits": {
+      "train": {
+        "count": 43429,
+        "sorted_member_paths_sha256": "37e9dfef821584fdb0ec98c7ffc8c1873a89c73544ab7aa8384bb11d8b0c8f60"
+      },
+      "validation": {
+        "count": 5428,
+        "sorted_member_paths_sha256": "d7f527a6d812079cca1ac0ab341668ab2ef84efd5b18556c96cf5b76bfed05f9"
+      },
+      "test": {
+        "count": 5448,
+        "sorted_member_paths_sha256": "6917274ab506f538bc18be239104d61df114f560140af26392a6189a8ccae40d"
+      }
+    }
+  },
+  {
+    "builder": "IntelImageClassification",
+    "archive_name": "intel-image-classification.d600d7a856.zip",
+    "archive_sha256": "3921405607c3e9d67a3459b6c629894c3a723aa1647f9310b6793da306e89337",
+    "archive_bytes": 363152213,
+    "url": "https://huggingface.co/datasets/resolverkatla/Intel-Image-Classification/resolve/main/intel-image-classification.zip",
+    "split_seed": 42,
+    "splits": {
+      "train": {
+        "count": 12632,
+        "sorted_member_paths_sha256": "57e994625bf8fd686359b84792df3e5199f7c25eaea67f18f89199a50e256169"
+      },
+      "validation": {
+        "count": 1402,
+        "sorted_member_paths_sha256": "095552430aa5889250302501e8547f76307104a98cfd7554a021cf89e7ee67b9"
+      },
+      "test": {
+        "count": 3000,
+        "sorted_member_paths_sha256": "93ecdb7b98db89a275c590ec3baba6939374dc85279858db62c03f15eaa2a59a"
+      }
+    }
+  }
+]
