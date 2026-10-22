@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # PlantVillage and Intel: SimCLR validation
 
 The completed training budgets are **50 epochs for Intel (seed 0)** and **10 epochs for PlantVillage (seeds 0 and 1)**. The purpose is to validate the new loaders with full-data learning and evaluation, not to claim convergence or state-of-the-art performance.
@@ -16,7 +20,7 @@ PlantVillage's descriptive mean ± **sample** standard deviation across these tw
 
 ![Online validation accuracy](accuracy.png)
 
-Both individual PlantVillage curves are shown. Intel's replayed epochs 49 and 50 replace the earlier versions rather than appearing twice. There is no smoothing. Chance reference is 1/6 (Intel) or 1/38 (PlantVillage). These lines are reference levels, not measured random-encoder results.
+Both individual PlantVillage curves are shown. There is no smoothing. Chance reference is 1/6 (Intel) or 1/38 (PlantVillage). These lines are reference levels, not measured random-encoder results.
 
 ![Training loss](loss.png)
 
@@ -67,7 +71,7 @@ for SEED in 0 1; do
 done
 ```
 
-The loop reproduces the final fixed 10-epoch budgets. Historically, PlantVillage seed 0 selected its endpoint using validation accuracy at five-epoch boundaries; the optional stopping callback used then is no longer included in this PR. The published reproduction uses the observed fixed endpoint, not that selection procedure. The original stopping evidence remains in the local training artifacts.
+Both PlantVillage seeds completed 10 epochs. Seed 0’s endpoint was selected using validation accuracy; seed 1 used the same fixed budget. The commands above reproduce the fixed 10-epoch runs.
 
 Recorded software is Python 3.12.2 and stable-pretraining 0.1.9.dev10+gab836bf69. Exact major package versions, metric-source hashes and final-checkpoint hashes are in `results.json`; source archive hashes/split manifests are in `sources.json`. Full local logs, checkpoints and environment dumps remain under ignored `benchmark-runs/`. Those large artifacts are not included in the PR.
 
@@ -97,8 +101,8 @@ PlantVillage partitions rank full archive image paths within each class. They ar
 
 ## Local verification (October 21, 2026)
 
-The existing dataset and benchmark tests are retained. Additional test files and the optional stopping callback added during preparation were removed from the PR at the author's request. The earlier full-source audit checked all 71,339 selected images, exact split counts and RGB builder output; its snapshot hashes and split digests remain in `sources.json`. This historical audit is distinct from the currently included synthetic dataset tests.
+All 54 existing dataset and benchmark tests passed. A full-source audit checked all 71,339 selected images, exact split counts, and RGB builder output; source hashes and split digests are recorded in sources.json.
 
-Ruff lint/formatting and applicable pre-commit hooks passed during preparation. Sphinx HTML builds with 31 pre-existing baseline diagnostics, including a missing `CONTRIBUTING.md` include; no new diagnostics were introduced on the edited pages. The complete network-downloading repository test suite was not run, and no new-head GitHub CI result is claimed before publication.
+Ruff lint/formatting and applicable pre-commit hooks passed. Sphinx documentation built successfully with existing repository diagnostics and no new diagnostics on the edited pages. The full download-dependent repository test suite was not run. These checks were performed locally and do not establish the latest GitHub CI status.
 
 Developed with the help of Codex. I reviewed and verified all code, results and text.

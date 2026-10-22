@@ -22,8 +22,3 @@ training budget. The runner writes `final.ckpt` after normal completion.
 For uninterrupted per-epoch saves with the installed Lightning, use
 `checkpoint.monitor=null checkpoint.every_n_epochs=1`: its monitored top-k path
 otherwise saves `last.ckpt` only when the monitored score qualifies.
-
-The floating benchmark dependency currently exposes `forward.simclr` and
-`forward.barlow_twins`; the stale forward-name references are corrected, and
-OnlineKNN receives explicit `num_classes` so small batches cannot infer an
-incorrect class count. The report pins the revision used for the actual runs.

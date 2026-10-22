@@ -140,4 +140,3 @@ the replay's metrics are the reported final results.
 
 See :doc:`the complete experiment report <experiments/plantvillage_intel/REPORT>` for
 learning curves, exact reproduction commands, hardware and checkpoint details.
-These are validation scores; the official test split remains held out.

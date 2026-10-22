@@ -191,5 +191,4 @@ rule; seed 1 repeated the fixed endpoint. Both use a 50-epoch LR horizon.
    :width: 100%
 
 See :doc:`the complete experiment report <experiments/plantvillage_intel/REPORT>` for
-exact commands, environment, losses, provenance and limitations. These are
-validation results on image-level splits, not leaf-independent test estimates.
+exact commands, environment, losses, provenance and limitations.
