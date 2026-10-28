@@ -14,12 +14,14 @@ from stable_datasets.schema import (
     Version,
 )
 from stable_datasets.schema import Image as ImageFeature
-from stable_datasets.splits import Split, SplitGenerator
-from stable_datasets.utils import BaseDatasetBuilder, bulk_download
+from stable_datasets.splits import Split
+from stable_datasets.utils import BaseDatasetBuilder
 
 
 class IntelImageClassification(BaseDatasetBuilder):
-    VERSION = Version("1.0.1")
+    """Load Intel scene images with a held-out test set and stratified validation split."""
+
+    VERSION = Version("1.0.0")
     SPLIT_SEED = 42
     VALIDATION_FRACTION = 0.1
 
@@ -34,17 +36,19 @@ class IntelImageClassification(BaseDatasetBuilder):
 
     SOURCE = DatasetSource(
         homepage="https://www.kaggle.com/datasets/puneet6060/intel-image-classification",
-        citation=(
-            "Intel Image Classification dataset, originally released for the Intel Image Classification Challenge."
-        ),
+        citation="""@misc{bansal2019intel,
+        author={Bansal, Puneet},
+        title={Intel Image Classification},
+        year={2019},
+        howpublished={Kaggle},
+        url={https://www.kaggle.com/datasets/puneet6060/intel-image-classification}
+        }""",
         assets={
-            "images": DownloadInfo(
-                url=(
-                    "https://huggingface.co/datasets/"
-                    "resolverkatla/Intel-Image-Classification/"
-                    "resolve/main/intel-image-classification.zip"
-                )
-            ),
+            split: DownloadInfo(
+                url="https://www.kaggle.com/api/v1/datasets/download/puneet6060/intel-image-classification",
+                filename="intel-image-classification.zip",
+            )
+            for split in (Split.TRAIN, Split.VALIDATION, Split.TEST)
         },
     )
 
@@ -65,23 +69,6 @@ class IntelImageClassification(BaseDatasetBuilder):
             homepage=self.SOURCE["homepage"],
             citation=self.SOURCE["citation"],
         )
-
-    def _candidate_splits(self):
-        return [Split.TRAIN, Split.VALIDATION, Split.TEST]
-
-    def _split_generators(self):
-        source = self._source()
-        paths = bulk_download(
-            [source["assets"]["images"]],
-            dest_folder=self._raw_download_dir,
-        )
-        return [
-            SplitGenerator(
-                name=split,
-                gen_kwargs={"data_path": paths[0], "split": split},
-            )
-            for split in self._candidate_splits()
-        ]
 
     @classmethod
     def _image_members(cls, archive):

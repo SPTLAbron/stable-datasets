@@ -142,3 +142,58 @@ def test_empty_archive(tmp_path):
                 split=Split.TRAIN,
             )
         )
+
+
+@pytest.fixture(scope="module")
+def real_intel_dataset(tmp_path_factory):
+    """Exercise the public loader, real Kaggle archive and fresh processed caches."""
+    return IntelImageClassification(
+        split=None,
+        download_dir=tmp_path_factory.mktemp("intel-downloads"),
+        processed_cache_dir=tmp_path_factory.mktemp("intel-processed"),
+    )
+
+
+def test_real_intel_dataset(real_intel_dataset):
+    expected_counts = {Split.TRAIN: 12632, Split.VALIDATION: 1402, Split.TEST: 3000}
+    expected_labels = ["buildings", "forest", "glacier", "mountain", "sea", "street"]
+    assert set(real_intel_dataset) == set(expected_counts)
+    for split, count in expected_counts.items():
+        dataset = real_intel_dataset[split]
+        assert len(dataset) == count
+        assert dataset.info.features["label"].names == expected_labels
+        assert set(dataset.table["label"].to_pylist()) == set(range(6))
+        for index in (0, count // 2, count - 1):
+            sample = dataset[index]
+            assert set(sample) == {"image", "label"}
+            assert isinstance(sample["image"], Image.Image)
+            assert sample["image"].mode == "RGB"
+            assert min(sample["image"].size) > 0
+            assert isinstance(sample["label"], int)
+            assert 0 <= sample["label"] < 6
+
+    # Check the actual source ZIP: predictions are excluded, and the official
+    # labeled test members are preserved exactly rather than repartitioned.
+    archives = list(real_intel_dataset._stable_datasets_download_dir.glob("intel-image-classification.*.zip"))
+    assert len(archives) == 1
+    with zipfile.ZipFile(archives[0]) as archive:
+        names = archive.namelist()
+        assert any(name.startswith("seg_pred/") for name in names)
+        official_test = {name for name in names if name.startswith("seg_test/") and name.endswith(".jpg")}
+        splits = IntelImageClassification._split_members(archive)
+    assert len(official_test) == 3000
+    assert set(splits[Split.TEST]) == official_test
+    assert all(not name.startswith("seg_pred/") for members in splits.values() for name in members)
+
+
+def test_real_intel_cache_reopens_offline(real_intel_dataset, monkeypatch):
+    def unexpected_download(*args, **kwargs):
+        pytest.fail("A processed-cache hit should not download the dataset")
+
+    monkeypatch.setattr("stable_datasets.utils.bulk_download", unexpected_download)
+    reloaded = IntelImageClassification(
+        split=Split.TEST,
+        processed_cache_dir=real_intel_dataset._stable_datasets_processed_cache_dir,
+    )
+    assert len(reloaded) == 3000
+    assert reloaded[0]["image"].mode == "RGB"

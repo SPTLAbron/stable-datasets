@@ -9,15 +9,11 @@ PlantVillage is an image classification dataset of plant leaves, covering
 healthy leaves and a range of plant diseases across 38 categories.
 
 This implementation uses the color images from the original PlantVillage
-repository. The dataset contains 54,305 images.
+repository, using the ``color`` configuration. The dataset contains 54,305 images.
 
-.. image:: teasers/plant_village_teaser.png
+.. image:: teasers/plant_village_teaser.jpg
    :alt: PlantVillage leaf images from 12 example classes, labeled by plant and health condition
    :align: center
-   :width: 100%
-
-.. image:: experiments/plantvillage_intel/splits.png
-   :alt: Exact train, validation and test image counts for both datasets
    :width: 100%
 
 Dataset Information
@@ -35,33 +31,32 @@ Dataset Information
    * - Total images
      - 54,305
    * - Training images
-     - 43,429
-   * - Validation images
-     - 5,428
+     - 43,596
    * - Test images
-     - 5,448
+     - 10,709
    * - Image format
      - RGB color images
 
 Splits
 ------
 
-The original color-image directory does not provide the train, validation,
-and test partitions used by this builder.
+The builder uses the authors' published color-image **80/20 train/test split**:
+43,596 training images and 10,709 test images. Membership comes directly from
+``splits/color_train.txt`` and ``splits/color_test.txt`` in the authors'
+``mohanty/PlantVillage`` distribution. No validation split is provided.
 
-Within each class, full ZIP-member paths are sorted by
-``(SHA256("42:" + path), path)``. For a class of size N, the first ``floor(0.8N)``
-paths form train, the next paths through ``floor(0.9N)`` form validation, and the
-remainder form test. Output paths are sorted lexicographically. Split seed 42 is
-independent of the model-training seeds. Archive ordering does not affect splits;
-changing a repository prefix in a member path can affect assignments.
+These official lists preserve the authors' leaf-group assignments. The builder
+matches their relative image paths against the GitHub archive without
+reshuffling, hashing filenames, or creating additional partitions. Archive entry
+order and repository-folder prefixes do not affect membership.
+
+The authors' leaf map does not identify every image. Images without an entry
+follow the official lists as published; this builder does not infer additional
+leaf identities. Tests verify separation of the identified leaf groups and
+exact agreement with both manifests.
 
 The downloaded snapshot has 54,305 color images, although the upstream overview
 quotes 54,306. Counts here refer to the actual selected archive members.
-
-The split operates at the image level. Images of the same physical leaf
-may therefore occur in different partitions. This limitation should be
-considered when interpreting evaluation results.
 
 Usage
 -----
@@ -71,13 +66,11 @@ Usage
     from stable_datasets.images import PlantVillage
 
     ds_train = PlantVillage(split="train")
-    ds_valid = PlantVillage(split="validation")
     ds_test = PlantVillage(split="test")
 
     ds_all = PlantVillage(split=None)
 
     print(len(ds_train))
-    print(len(ds_valid))
     print(len(ds_test))
 
 Each example contains:
@@ -89,7 +82,9 @@ Source
 ------
 
 * Original repository: https://github.com/spMohanty/PlantVillage-Dataset
-* Download source: https://github.com/spMohanty/PlantVillage-Dataset/archive/refs/heads/master.zip
+* Image archive: https://github.com/spMohanty/PlantVillage-Dataset/archive/refs/heads/master.zip
+* Official training manifest: https://huggingface.co/datasets/mohanty/PlantVillage/resolve/main/splits/color_train.txt
+* Official test manifest: https://huggingface.co/datasets/mohanty/PlantVillage/resolve/main/splits/color_test.txt
 
 Class mapping
 -------------
@@ -140,20 +135,19 @@ The following names define the stable zero-based class order:
 Download, cache and RGB behavior
 --------------------------------
 
-The builder downloads the GitHub ZIP once. It reads selected members directly;
+The builder downloads the two official split manifests and caches the shared
+GitHub image ZIP once. It reads selected members directly;
 no archive entries are extracted to the filesystem. The first load builds a
 processed cache per split. Repeated loads reopen it without downloading.
 
 RGB images retain their original encoded bytes. Other modes, including a source
 RGBA PNG, are converted to RGB and encoded as lossless PNG (regardless of the
-original filename extension). Version 1.0.1 uses a new cache fingerprint so older
-non-RGB caches are not silently reused. Existing older caches are not deleted.
+original filename extension).
 
 The defaults are ``~/.stable-datasets/downloads`` and
 ``~/.stable-datasets/processed``. Override them explicitly with
 ``download_dir=...`` and ``processed_cache_dir=...``. ``STABLE_DATASETS_CACHE_DIR``
-can relocate the dataset cache root; the benchmark runner separately uses
-``STABLE_DATASETS_ROOT`` for its data directory.
+can relocate the dataset cache root.
 
 Attribution and usage terms
 ---------------------------
@@ -176,19 +170,3 @@ redistribution. No dataset photographs are redistributed in this documentation.
       journal={Frontiers in Plant Science},
       volume={7}, year={2016}, doi={10.3389/fpls.2016.01419}
     }
-
-Validation and reproduction
----------------------------
-
-SimCLR ViT-S/16 trained for **10 epochs with two seeds**. Final validation
-balanced linear top-1 is **73.19% / 71.28%**; k-NN top-1 is **69.16% / 66.87%**.
-The two-seed descriptive means are 72.24 +/- 1.35% and 68.01 +/- 1.62%
-(sample standard deviation). Seed 0 selected epoch 10 with a validation stopping
-rule; seed 1 repeated the fixed endpoint. Both use a 50-epoch LR horizon.
-
-.. image:: experiments/plantvillage_intel/accuracy.png
-   :alt: Intel and PlantVillage validation learning curves
-   :width: 100%
-
-See :doc:`the complete experiment report <experiments/plantvillage_intel/REPORT>` for
-exact commands, environment, losses, provenance and limitations.

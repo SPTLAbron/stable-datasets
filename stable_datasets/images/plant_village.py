@@ -1,12 +1,12 @@
-import hashlib
 import io
 import zipfile
 from collections import defaultdict
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 
 from PIL import Image as PILImage
 
 from stable_datasets.schema import (
+    BuilderConfig,
     ClassLabel,
     DatasetInfo,
     DatasetSource,
@@ -15,12 +15,16 @@ from stable_datasets.schema import (
     Version,
 )
 from stable_datasets.schema import Image as ImageFeature
-from stable_datasets.splits import Split, SplitGenerator
+from stable_datasets.splits import Split
 from stable_datasets.utils import BaseDatasetBuilder, bulk_download
 
 
 class PlantVillage(BaseDatasetBuilder):
-    VERSION = Version("1.0.1")
+    """Load PlantVillage color images using the authors' official train/test manifests."""
+
+    VERSION = Version("1.0.0")
+    BUILDER_CONFIGS = [BuilderConfig(name="color")]
+    DEFAULT_CONFIG_NAME = "color"
 
     SOURCE = DatasetSource(
         homepage="https://github.com/spMohanty/PlantVillage-Dataset",
@@ -33,13 +37,15 @@ class PlantVillage(BaseDatasetBuilder):
         doi={10.3389/fpls.2016.01419}
         }""",
         assets={
-            "images": DownloadInfo(
-                url=("https://github.com/spMohanty/PlantVillage-Dataset/archive/refs/heads/master.zip")
-            ),
+            split: DownloadInfo(
+                url=f"https://huggingface.co/datasets/mohanty/PlantVillage/resolve/main/splits/color_{split}.txt",
+                filename=f"plant-village-color-{split}.txt",
+            )
+            for split in (Split.TRAIN, Split.TEST)
         },
     )
 
-    SPLIT_SEED = 42
+    IMAGE_ARCHIVE = DownloadInfo(url="https://github.com/spMohanty/PlantVillage-Dataset/archive/refs/heads/master.zip")
 
     @staticmethod
     def _labels():
@@ -88,8 +94,8 @@ class PlantVillage(BaseDatasetBuilder):
         return DatasetInfo(
             description=(
                 "PlantVillage original RGB leaf images in 38 "
-                "plant-health categories. Deterministic 80/10/10 "
-                "class-stratified image splits; not leaf-group-aware."
+                "plant-health categories, using the authors' published "
+                "leaf-group-aware 80/20 train/test split."
             ),
             features=Features(
                 {
@@ -101,25 +107,6 @@ class PlantVillage(BaseDatasetBuilder):
             homepage=self.SOURCE["homepage"],
             citation=self.SOURCE["citation"],
         )
-
-    def _candidate_splits(self):
-        return [Split.TRAIN, Split.VALIDATION, Split.TEST]
-
-    def _split_generators(self):
-        source = self._source()
-        paths = bulk_download(
-            [source["assets"]["images"]],
-            dest_folder=self._raw_download_dir,
-        )
-        data_path = paths[0]
-
-        return [
-            SplitGenerator(
-                name=split,
-                gen_kwargs={"data_path": data_path, "split": split},
-            )
-            for split in self._candidate_splits()
-        ]
 
     @classmethod
     def _image_members(cls, archive):
@@ -157,45 +144,32 @@ class PlantVillage(BaseDatasetBuilder):
         return groups
 
     @classmethod
-    def _split_members(cls, archive):
-        groups = cls._image_members(archive)
-        result = {
-            Split.TRAIN: [],
-            Split.VALIDATION: [],
-            Split.TEST: [],
+    def _split_members(cls, archive, split_path):
+        """Resolve an official color-image manifest against the source archive."""
+        members = {
+            PurePosixPath(*PurePosixPath(name).parts[-4:]).as_posix(): name
+            for images in cls._image_members(archive).values()
+            for name in images
         }
-
-        for class_name in sorted(groups):
-            members = sorted(
-                groups[class_name],
-                key=lambda name: (
-                    hashlib.sha256(f"{cls.SPLIT_SEED}:{name}".encode()).digest(),
-                    name,
-                ),
-            )
-
-            count = len(members)
-            train_end = int(count * 0.8)
-            validation_end = int(count * 0.9)
-
-            result[Split.TRAIN].extend(members[:train_end])
-            result[Split.VALIDATION].extend(members[train_end:validation_end])
-            result[Split.TEST].extend(members[validation_end:])
-
-        for split in result:
-            result[split].sort()
-
-        return result
+        paths = [line.strip() for line in Path(split_path).read_text(encoding="utf-8").splitlines() if line.strip()]
+        if len(paths) != len(set(paths)):
+            raise ValueError("Duplicate image paths in PlantVillage split manifest.")
+        missing = set(paths) - members.keys()
+        if missing:
+            raise ValueError(f"PlantVillage split manifest references missing color image: {min(missing)!r}")
+        return sorted(members[path] for path in paths)
 
     def _generate_examples(self, data_path, split):
         if split not in self._candidate_splits():
             raise ValueError(f"Unknown PlantVillage split: {split}")
 
-        with zipfile.ZipFile(data_path) as archive:
-            groups = self._split_members(archive)
-            selected = groups[split]
+        # The base builder downloads the official split manifests. Both splits
+        # read the same image archive, which the downloader caches after one fetch.
+        archive_path = bulk_download([self.IMAGE_ARCHIVE], dest_folder=self._raw_download_dir)[0]
+        with zipfile.ZipFile(archive_path) as archive:
+            selected = self._split_members(archive, data_path)
             if not selected:
-                raise ValueError(f"No PlantVillage color images found for split {split!r}. Check the archive layout.")
+                raise ValueError(f"No PlantVillage color images found for split {split!r}. Check the split manifest.")
 
             label_to_id = {name: index for index, name in enumerate(self._labels())}
 

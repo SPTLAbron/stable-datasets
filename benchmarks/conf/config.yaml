@@ -20,7 +20,6 @@ checkpoint:
 
 training:
   max_epochs: 50
-  scheduler_epochs: null  # optional longer schedule when reproducing a truncated run
   precision: "16-mixed"
   batch_size: 256
   accumulate_grad_batches: 1

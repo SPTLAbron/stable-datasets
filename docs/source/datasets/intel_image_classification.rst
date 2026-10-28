@@ -23,10 +23,6 @@ classification challenge.
    :align: center
    :width: 100%
 
-.. image:: experiments/plantvillage_intel/splits.png
-   :alt: Exact train, validation and test image counts for both datasets
-   :width: 100%
-
 Dataset Information
 -------------------
 
@@ -95,7 +91,7 @@ Source
 ------
 
 * Original dataset: https://www.kaggle.com/datasets/puneet6060/intel-image-classification
-* Community-hosted archive: https://huggingface.co/datasets/resolverkatla/Intel-Image-Classification
+* Download: https://www.kaggle.com/api/v1/datasets/download/puneet6060/intel-image-classification
 
 
 Class mapping
@@ -107,36 +103,33 @@ Labels 0 through 5 mean ``buildings``, ``forest``, ``glacier``, ``mountain``,
 Download, cache and RGB behavior
 --------------------------------
 
-The public community-hosted ZIP is downloaded without Kaggle credentials and
-read directly without extraction. Original RGB bytes are preserved; any non-RGB
-images are converted to RGB and encoded as lossless PNG. Builder version 1.0.1
-uses a fresh fingerprint for this decoding guarantee. No old caches are deleted.
+The original public Kaggle ZIP is downloaded and read directly without extraction.
+Original RGB bytes are preserved; any non-RGB images are converted to RGB and
+encoded as lossless PNG.
 First loads build processed split caches; repeated loads reopen them offline.
 
 Default directories are ``~/.stable-datasets/downloads`` and
 ``~/.stable-datasets/processed``; override them through ``download_dir`` and
-``processed_cache_dir``, or set ``STABLE_DATASETS_CACHE_DIR``. The benchmark
-runner's explicit data-root setting is ``STABLE_DATASETS_ROOT``.
+``processed_cache_dir``, or set ``STABLE_DATASETS_CACHE_DIR``.
 
 Attribution and usage terms
 ---------------------------
 
 Credit the Intel Image Classification challenge and Puneet Bansal's
-`Kaggle distribution <https://www.kaggle.com/datasets/puneet6060/intel-image-classification>`_,
-and acknowledge resolverkatla's community-hosted Hugging Face archive.
-The downloaded ZIP has no license file, and the mirror card does not establish
-an explicit dataset license. This integration does not assign a license or
-transfer the library's code license to the photographs. Consult the source's
+`Kaggle distribution <https://www.kaggle.com/datasets/puneet6060/intel-image-classification>`_.
+The downloaded ZIP has no license file. This integration does not assign a
+license or transfer the library's code license to the photographs. Consult the source's
 current terms before redistribution; no source photographs are included here.
 
-Validation and reproduction
----------------------------
+Citation
+--------
 
-SimCLR ViT-S/16 trained for **50 epochs, seed 0**. Final validation balanced
-linear top-1/top-5 are **70.37% / 99.26%** and k-NN top-1/top-5 are
-**76.22% / 98.87%**. A 150-epoch LR horizon was preserved when the training budget
-was shortened to 50. The final two epochs were replayed from a checkpoint;
-the replay's metrics are the reported final results.
+.. code-block:: bibtex
 
-See :doc:`the complete experiment report <experiments/plantvillage_intel/REPORT>` for
-learning curves, exact reproduction commands, hardware and checkpoint details.
+    @misc{bansal2019intel,
+      author={Bansal, Puneet},
+      title={Intel Image Classification},
+      year={2019},
+      howpublished={Kaggle},
+      url={https://www.kaggle.com/datasets/puneet6060/intel-image-classification}
+    }

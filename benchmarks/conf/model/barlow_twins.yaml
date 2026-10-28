@@ -1,5 +1,5 @@
 name: barlow_twins
-forward: barlow_twins
+forward: barlow_twins_forward
 
 transforms:
   type: multiview
@@ -79,14 +79,6 @@ params:
     batch_size: 256
     max_epochs: 100
   imagenette:
-    batch_size: 256
-    max_epochs: 150
-
-  # Full-resolution RGB datasets; initial budgets follow imagenette.
-  plantvillage:
-    batch_size: 256
-    max_epochs: 150
-  intelimageclassification:
     batch_size: 256
     max_epochs: 150
 
