@@ -92,6 +92,8 @@ Available Datasets
    linnaeus5
    plant_village
    intel_image_classification
+   horse_or_human
+   semeion
    malaria
    kather_colorectal_histology
    sun397
@@ -99,6 +101,13 @@ Available Datasets
    usps
    oxford_iiit_pet
    eurosat
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Image Segmentation Datasets
+
+   weizmann_seg
+   bsds500
 
 .. toctree::
    :maxdepth: 1

@@ -4,6 +4,7 @@ from .arabic_characters import ArabicCharacters
 from .arabic_digits import ArabicDigits
 from .awa2 import AWA2
 from .beans import Beans
+from .bsds500 import BSDS500
 from .caltech256 import Caltech256
 from .cars3d import Cars3D
 from .cars196 import Cars196
@@ -37,6 +38,7 @@ from .food101 import Food101
 from .galaxy10 import Galaxy10Decal
 from .gtsrb import GTSRB
 from .hasy_v2 import HASYv2
+from .horse_or_human import HorseOrHuman
 from .imagenet_1k import ImageNet1K
 from .imagenet_10 import Imagenette
 from .imagenet_100 import ImageNet100
@@ -61,6 +63,7 @@ from .plant_village import PlantVillage
 
 # from .places365_small import Places365Small
 from .rock_paper_scissor import RockPaperScissor
+from .semeion import Semeion
 from .shapes3d import Shapes3D
 from .small_norb import SmallNORB
 from .stanford40 import Stanford40
@@ -72,6 +75,7 @@ from .tf_flowers import TFFlowers
 from .tiny_imagenet import TinyImagenet
 from .tiny_imagenet_c import TinyImagenetC
 from .usps import USPS
+from .weizmann_seg import WeizmannSegmentation
 
 
 __all__ = [
@@ -79,6 +83,7 @@ __all__ = [
     "ArabicDigits",
     "AWA2",
     "Beans",
+    "BSDS500",
     "Caltech256",
     "Cars196",
     "Cars3D",
@@ -110,6 +115,7 @@ __all__ = [
     "Food101",
     "GTSRB",
     "HASYv2",
+    "HorseOrHuman",
     "ImageNet1K",
     "ImageNet100",
     "ImageNetSketch",
@@ -131,6 +137,7 @@ __all__ = [
     "PatchCamelyon",
     "OxfordIIITPet",
     "RockPaperScissor",
+    "Semeion",
     "Shapes3D",
     "SmallNORB",
     "Stanford40",
@@ -141,4 +148,5 @@ __all__ = [
     "TinyImagenet",
     "TinyImagenetC",
     "USPS",
+    "WeizmannSegmentation",
 ]
