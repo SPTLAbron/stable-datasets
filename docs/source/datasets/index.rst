@@ -101,6 +101,8 @@ Available Datasets
    usps
    oxford_iiit_pet
    eurosat
+   breakhis
+   patternnet
 
 .. toctree::
    :maxdepth: 1
