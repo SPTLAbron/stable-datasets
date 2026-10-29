@@ -172,8 +172,7 @@ def test_real_intel_dataset(real_intel_dataset):
             assert isinstance(sample["label"], int)
             assert 0 <= sample["label"] < 6
 
-    # Check the actual source ZIP: predictions are excluded, and the official
-    # labeled test members are preserved exactly rather than repartitioned.
+    # Check the actual source ZIP.
     archives = list(real_intel_dataset._stable_datasets_download_dir.glob("intel-image-classification.*.zip"))
     assert len(archives) == 1
     with zipfile.ZipFile(archives[0]) as archive:

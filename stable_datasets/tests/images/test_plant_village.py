@@ -210,8 +210,7 @@ def test_real_plant_village_dataset(real_plant_village_dataset):
     assert train | test == color_members
     assert train.isdisjoint(test)
 
-    # Check separation for leaves identified by the authors' metadata. Upstream
-    # has no leaf-map entries for some images; do not invent identities for them.
+    # Check separation for leaves identified by the authors' metadata.
     leaf_ids = {}
     for split, members in splits.items():
         identified = set()
