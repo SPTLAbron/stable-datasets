@@ -58,7 +58,9 @@ from .med_mnist import MedMNIST
 from .not_mnist import NotMNIST
 
 # from .mnist import MNIST
+from .office_home import OfficeHome
 from .oxford_iiit_pet import OxfordIIITPet
+from .pacs import PACS
 from .patch_camelyon import PatchCamelyon
 from .patternnet import PatternNet
 from .plant_village import PlantVillage
@@ -137,6 +139,8 @@ __all__ = [
     "MedMNIST",
     "NotMNIST",
     "PlantVillage",
+    "OfficeHome",
+    "PACS",
     "PatternNet",
     "PatchCamelyon",
     "OxfordIIITPet",
